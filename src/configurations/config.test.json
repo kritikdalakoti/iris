@@ -1,0 +1,33 @@
+{
+    "configurations": {
+        "postgresConfig": {
+            "client": "pg",
+            "connection": "postgres://postgres:secret@localhost/testdb",
+            "pool": {
+                "min": 2,
+                "max": 10
+            }
+        },
+        "mongoConfig": {},
+        "sqlConfig": {},
+        "serverConfig": {
+            "port": 50101,
+            "routePrefix": "/api"
+        },
+        "externalUrls": {},
+        "myHost": "localhost",
+        "awsS3": {
+            "accessKeyId": "",
+            "secretAccessKey": "",
+            "region": "ap-south-1",
+            "bucketName": "",
+            "bucketBaseUrl": ""
+        },
+        "mailConfig": {},
+        "extraData": {},
+
+        "influxConfig": {
+            "connectionString": "http://iris:secret@localhost:8086/testdb"
+        }
+    }
+}

@@ -1,0 +1,87 @@
+import xlsxwriter
+import requests
+import json
+import sys
+
+arguments = sys.argv[1:]
+companyId = arguments[0]
+reportId = arguments[1]
+startDate = arguments[2]
+endDate = arguments[3]
+
+#companyId = 36
+#reportId = 43
+#startDate = 1616816250446
+#endDate = 1616819719542
+
+url = "http://localhost:50101/api/v1.0.0/companies/"+str(companyId)+"/custom-report/"+str(reportId)+"/start-date/"+str(startDate)+"/end-date/"+str(endDate)+"/generate-excel-sheet"
+#url = "http://localhost:50101/api/v1.0.0/companies/16/custom-report/1/generate-excel-sheet" ; 
+print("Url",url)
+response = requests.get(url=url)
+print("response in python////////////////",response)
+finalData = json.loads(response.text)
+
+# Check validations for data prepration
+#print(finalData)
+report = finalData['result']
+
+#reportName = "/home/pratik/Downloads/iris/excel-files/" + "custom-report-"+str(reportId)+"-"+startDate+ ".xlsx"
+
+reportName = "/home/ubuntu/irisbackend/excel-files/" + "custom-report-"+str(reportId) + "-"+startDate+ ".xlsx"
+
+
+workbook  = xlsxwriter.Workbook(reportName)
+worksheetReport = workbook.add_worksheet('report')
+
+
+#  Formats 
+
+#sheet_title_format = 
+#sheet_title_format.set_bold()
+#sheet_title_format.set_font_size(18)
+
+# adding data
+
+#for x in range(len(report['subheaders'])):
+
+ #   if( report['subheaders']['isMerge']  ):
+  #      worksheetGlance.wri(report['headers']['cell'],report['headers']['title'] ,sheet_title_format)
+
+
+
+for x in (report['headers']):
+    print(x['title'])
+
+    if(x['isMerge']):
+       #print(x['title'])
+       worksheetReport.merge_range(x['cell'], x['title'])
+    else:
+#        print(x['cell'],x['title'])
+        worksheetReport.write(x['cell'], x['title'])
+
+rowStartIndex = 22
+
+worksheetReport.write_row(rowStartIndex,0,report['subHeadersStringArray'])
+
+rowStartIndex = 23
+for x in (report['data']):
+   # print(x)
+    worksheetReport.write_row(rowStartIndex ,0,x)
+    rowStartIndex = rowStartIndex + 1
+
+
+chart1 = workbook.add_chart({'type': 'line'})
+
+chart1.set_size({'width': 130, 'height': 350})
+
+length = len(report['subHeadersStringArray']) 
+for x in (report['chartDataPlot']):
+    #print(x)
+    chart1.add_series(x)
+
+chart1.set_style(10)
+chart1.set_title ({'name': 'Custom Report -'+str(reportId)})
+chart1.set_x_axis({'name': 'Date'})  
+worksheetReport.insert_chart('A2', chart1, {'x_scale': length - 1, 'y_scale': 1})
+
+workbook.close()

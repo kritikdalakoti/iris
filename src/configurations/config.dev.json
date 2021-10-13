@@ -1,0 +1,49 @@
+{
+    "configurations": {
+        "postgresConfig": {
+            "client": "pg",
+            "connection": "postgres://postgres:secret@localhost/iris",
+            "pool": {
+                "min": 2,
+                "max": 10
+            }
+        },
+        "mongoConfig": {},
+        "sqlConfig": {},
+        "serverConfig": {
+            "port": 50101,
+            "routePrefix": "/api"
+        },
+        "externalUrls": {
+            "sendEmailWithAttachmentUrl":"http://localhost:50101/api/v1.0.0/notification/send-email/attachment",
+            "sendEmailUrl":"http://localhost:50101/api/v1.0.0/notification/send-email",
+            "excelSheetDirectory": "/home/ubuntu/irisbackend/excel-files",
+            "pythonFilePath": "/home/ubuntu/irisbackend/excel-creation.py",
+            "Type1": "/home/ubuntu/irisbackend/src/mail-templates/custome-report.hbs",
+            "Type2": "/home/ubuntu/irisbackend/src/mail-templates/alarm.hbs",
+            "Type3": "/home/ubuntu/irisbackend/src/mail-templates/forgot-password.hbs",
+            "fixedReportPythonFilePath": "/home/ubuntu/irisbackend/fixed-report-creation.py",
+            "customReportPath":"/home/ubuntu/irisbackend/excel-files/custom-report-",
+            "excelUploadPath":"/home/ubuntu/uploads",
+            "fixedReportPath":"/home/ubuntu/irisbackend/excel-files/fixed-report-"
+
+        },
+        "myHost": "13.127.215.76",
+        "awsS3": {
+            "accessKeyId": "",
+            "secretAccessKey": "",
+            "region": "ap-south-1",
+            "bucketName": "",
+            "bucketBaseUrl": ""
+        },
+        "mailConfig": {
+            "host": "smtp.gmail.com",
+            "username": "reportiris23@gmail.com",
+            "password": "patil@1995"
+        },
+        "extraData": {},
+        "influxConfig": {
+            "connectionString": "http://iris:secret@localhost:8086/iris"
+        }
+    }
+}
