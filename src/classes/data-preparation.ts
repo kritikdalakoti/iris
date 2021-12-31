@@ -183,7 +183,7 @@ export class DataPreparation {
             let url = requestedUrl
             let method = 'GET'
             let apiResponse = await CallApi.makeRequest(url, method, data);
-            console.log(apiResponse)
+            //console.log(apiResponse)
             return apiResponse;
         } catch (err) {
             return {};

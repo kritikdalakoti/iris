@@ -11,7 +11,11 @@ export const createFixedReportsModelValidationObj: RouteOptionsResponseSchema = 
     "isDeleted":Joi.number().default(0),
     "isActive":Joi.number().default(1),
     "meters":Joi.array().single(),
-    "isEmailEnabled":Joi.number().default(0),
+    "isEmailEnabled":Joi.boolean().default(1),
+    "reportType":Joi.number().required(),
+    "isShared":Joi.number().default(0),
+    "sharedWith":Joi.array().single(),
+    "unitRate":Joi.number().default(0)
 });
 
 export const updateFixedReportsModelValidationObj: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>Joi.object().keys({
@@ -23,7 +27,11 @@ export const updateFixedReportsModelValidationObj: RouteOptionsResponseSchema = 
     "isDeleted":Joi.number().default(0),
     "isActive":Joi.number().default(1),
     "meters":Joi.array().single(),
-    "isEmailEnabled":Joi.number().default(0),
+    "isEmailEnabled":Joi.boolean().default(1),
+    "reportType":Joi.number(),
+    "isShared":Joi.number().default(0),
+    "sharedWith":Joi.array().single(),
+    "unitRate":Joi.number().default(0)
 });
 
 export const companyIdInParamsValidtaionObj: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>Joi.object().keys({
@@ -46,5 +54,21 @@ export const getByStartAndEndDate: RouteOptionsResponseSchema = <RouteOptionsRes
     "fixedReportId": Joi.number().required(),
     "startDate": Joi.number().required(),
     "endDate": Joi.number().required(),
+});
+export const genrateExcelSheet: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>Joi.object().keys({
+    "companyId": Joi.number().required(),
+    "userId": Joi.number().required(),
+    "reportId": Joi.number().required(),
+    "startDate": Joi.number().required(),
+    "endDate": Joi.number().required(),
+});
+export const sendFixedReport: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>Joi.object().keys({
+    "companyId": Joi.number().required(),
+    "fixedReportId": Joi.number().required(),
+    "startDate": Joi.number().required(),
+    "reportType": Joi.number().required(),
+    "genratedReportType": Joi.string().required(),
 
 });
+
+

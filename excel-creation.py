@@ -2,6 +2,7 @@ import xlsxwriter
 import requests
 import json
 import sys
+import re
 
 arguments = sys.argv[1:]
 companyId = arguments[0]
@@ -25,14 +26,17 @@ finalData = json.loads(response.text)
 #print(finalData)
 report = finalData['result']
 
-#reportName = "/home/pratik/Downloads/iris/excel-files/" + "custom-report-"+str(reportId)+"-"+startDate+ ".xlsx"
+# reportName = "/home/pratik/Downloads/iris/excel-files/" + "custom-report-"+str(reportId)+"-"+startDate+ ".xlsx"
 
 reportName = "/home/ubuntu/irisbackend/excel-files/" + "custom-report-"+str(reportId) + "-"+startDate+ ".xlsx"
 
 
 workbook  = xlsxwriter.Workbook(reportName)
 worksheetReport = workbook.add_worksheet('report')
-
+headerBorder = workbook.add_format({"border":1})
+sheet_border_format = workbook.add_format()
+sheet_border_format.set_bg_color('#B9CCE4')
+borderFormat = workbook.add_format({'top' : 1,"left":1,"right":1,"bottom": 1})
 
 #  Formats 
 
@@ -54,21 +58,37 @@ for x in (report['headers']):
 
     if(x['isMerge']):
        #print(x['title'])
-       worksheetReport.merge_range(x['cell'], x['title'])
+       worksheetReport.merge_range(x['cell'], x['title'],headerBorder)
     else:
 #        print(x['cell'],x['title'])
-        worksheetReport.write(x['cell'], x['title'])
+        worksheetReport.write(x['cell'], x['title'],headerBorder)
+
+endHeader = report['headers'][len(report['headers']) -1]
+endCell = re.split('(\d+)',str(endHeader['cell']).split(":")[1])[0]
 
 rowStartIndex = 22
 
 worksheetReport.write_row(rowStartIndex,0,report['subHeadersStringArray'])
+
+length = 0
+dataLenght = 0
+columnStartIndex = 0
+for x in(report['subHeadersStringArray']) :
+    dataLenght = int(len(x))
+    if dataLenght < 10:
+       length = int(len(x)) + 15
+    else:
+       length = int(len(x))
+    worksheetReport.set_column(columnStartIndex,columnStartIndex,length)
+    columnStartIndex = columnStartIndex + 1
 
 rowStartIndex = 23
 for x in (report['data']):
    # print(x)
     worksheetReport.write_row(rowStartIndex ,0,x)
     rowStartIndex = rowStartIndex + 1
-
+finalEndCell = endCell + str(rowStartIndex)
+worksheetReport.conditional_format('A23:'+finalEndCell, {'type': 'no_errors','format': borderFormat})
 
 chart1 = workbook.add_chart({'type': 'line'})
 

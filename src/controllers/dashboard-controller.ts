@@ -631,7 +631,9 @@ public async handleGetAllDashboardDataEntries(request: Hapi.Request, h: Hapi.Res
             let countQuery = `SELECT count(*) from t_dashboard_data where shared_with::jsonb @> '[${condition['userId']}]'::jsonb or user_id= ${condition['userId']} and company_id = ${condition['companyId']} and is_active = 1 and is_deleted = 0`; 
             let countQueryResponse = await this.serviceImpl.rawQueryOnDb(query);
             let finalList = [];
-            console.log("dashboard data",obj.length)
+            console.log("countQuery",countQuery)
+            console.log("dashboard data",obj.length);
+            console.log("countQueryResponse",countQueryResponse)
             for( let i = 0; i < obj.length; i++ ) {
                 console.log("data",obj[i])
                if(obj[i]['parameters'].length > 0) {
@@ -653,7 +655,7 @@ public async handleGetAllDashboardDataEntries(request: Hapi.Request, h: Hapi.Res
             }
             let responseObj = {};
             responseObj['list'] = finalList;
-            responseObj['count'] = countQueryResponse['result'][0]['count'];
+            responseObj['count'] = Object.keys(countQueryResponse['result']).length > 0 ? countQueryResponse['result'][0]['count'] : 0;
             
             response = new Response(true, StatusCodes.OK, CustomMessages.SUCCESS, responseObj);
     

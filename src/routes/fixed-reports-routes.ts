@@ -1,7 +1,7 @@
 import * as Hapi from '@hapi/hapi';
 import { StatusCodes } from "../classes/status-codes";
 import { Response } from "../classes/response";
-import { getByStartAndEndDate,companyIdInParamsValidtaionObj, createFixedReportsModelValidationObj, updateFixedReportsModelValidationObj,companyIdAnduserIdAndFixedReportsIdInParamsValidationObj } from '../validations/fixed-reports-validations'
+import { sendFixedReport,genrateExcelSheet,getByStartAndEndDate,companyIdInParamsValidtaionObj, createFixedReportsModelValidationObj, updateFixedReportsModelValidationObj,companyIdAnduserIdAndFixedReportsIdInParamsValidationObj } from '../validations/fixed-reports-validations'
 import FixedReportsController from '../controllers/fixed-reports-controller';
 import { headerValidationModel,getAllApiQueryParams} from "../validations/common-validations"
 import { companyIdAndUserIdInParams } from '../validations/dashboard-validations';
@@ -56,7 +56,7 @@ export default function (server: Hapi.Server) {
             method: 'GET',
             path: '/' + version + baseUrl+ resourceName,
             options: {
-                handler: controller.handleGetAllEntries,
+                handler: controller.handleGetAllSharedEntries,
                 description: 'Get All Entries for fixed-report',
                 tags: ['api'], // ADD THIS TAG
                 auth: isAuthRequired,
@@ -134,7 +134,7 @@ export default function (server: Hapi.Server) {
                 validate: {
                     headers: headerValidationModel,
                     params: companyIdAnduserIdAndFixedReportsIdInParamsValidationObj,
-                    payload: createFixedReportsModelValidationObj,
+                    payload: updateFixedReportsModelValidationObj,
                     failAction: async (request, h, err) => {
 
                         if (err) {
@@ -195,7 +195,7 @@ export default function (server: Hapi.Server) {
         },
         {
             method: 'GET',
-            path: '/' + version + baseUrl+resourceName + id+"/start-date/{startDate}/end-date/{endDate}/genrate-fixed-report-excelsheet",
+            path: '/' + version + baseUrl+resourceName + "/{reportId}"+"/start-date/{startDate}/end-date/{endDate}/genrate-fixed-report-excelsheet",
             options: {
                 handler: controller.genrateExcelSheet,
                 description: 'Get Single Entry for fixed-report',
@@ -203,7 +203,7 @@ export default function (server: Hapi.Server) {
                 auth: isAuthRequired,
                 validate: {
                     headers: headerValidationModel,
-                    params: getByStartAndEndDate,
+                    params: genrateExcelSheet,
                     failAction: async (request, h, err) => {
 
                         if (err) {
@@ -233,9 +233,42 @@ export default function (server: Hapi.Server) {
                 handler: controller.handleRunPythonScriptOfFixedReport,
                 description: 'Get Single Entry for fixed-report',
                 tags: ['api'], // ADD THIS TAG
+                auth: false,
+                validate: {
+                    headers: headerValidationModel,
+                    failAction: async (request, h, err) => {
+
+                        if (err) {
+                            let response = new Response(false, StatusCodes.NOT_ACCEPTABLE, err.message, {});
+                            return h.response(response).code(response.getStatusCode()).takeover();
+                        }
+
+                        return h.continue;
+                    }
+                },
+                plugins: {
+                    'hapi-swagger': {
+                        responses: {
+                            '201': [],
+                            '406': {
+                                'description': 'Validation Error.'
+                            }
+                        }
+                    }
+                }
+            }
+        },
+{
+            method: 'POST',
+            path: '/' + version + baseUrl+ "send-fixed-report",
+            options: {
+                handler: controller.handleSendFixedReport,
+                description: 'Create fixed-report Entry',
+                tags: ['api'], // ADD THIS TAG
                 auth: isAuthRequired,
                 validate: {
                     headers: headerValidationModel,
+                    payload: sendFixedReport,
                     failAction: async (request, h, err) => {
 
                         if (err) {

@@ -47,7 +47,13 @@ export const getEmail: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>
 });
 
 export const getPassword: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>Joi.object().keys({
-    "password" : Joi.string().required()
+    "password" : Joi.string().required(),
+});
+export const updatePwd: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>Joi.object().keys({
+    "email":Joi.string().required(),
+    "password" : Joi.string().required(),
+    "forgotPasswordToken" : Joi.string().required()
+
 });
 
 export const companyIdAndUserIdInParams: RouteOptionsResponseSchema = <RouteOptionsResponseSchema>Joi.object().keys({

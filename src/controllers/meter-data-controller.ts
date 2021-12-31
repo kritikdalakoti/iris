@@ -24,7 +24,7 @@ export default class MeterDataController {
     public shiftServiceImpl: CommonCrudServiceImpl;
     public userServiceImpl: CommonCrudServiceImpl;
     public metersServiceImpl: CommonCrudServiceImpl;
-
+    public faultInformationServiceImpl: CommonCrudServiceImpl;
     public measurementName;
     public measurementName2;
 
@@ -37,6 +37,7 @@ export default class MeterDataController {
         this.shiftServiceImpl = new CommonCrudServiceImpl(this.globalVariables.postgres, 't_shifts', 't_shifts');
         this.userServiceImpl = new CommonCrudServiceImpl(this.globalVariables.postgres, 't_users', 't_users');
         this.metersServiceImpl = new CommonCrudServiceImpl(this.globalVariables.postgres, 't_meters', 't_meters');
+        this.faultInformationServiceImpl = new CommonCrudServiceImpl(this.globalVariables.postgres, 't_fault_information', 't_fault_information');
 
     }
 
@@ -119,16 +120,17 @@ export default class MeterDataController {
            let companyMeterParameters = comapnyMeterData['meterParameters'];
            let a ;
 
+           let shiftName = await (await this.shiftServiceImpl.getSingleEntry({"shiftId":shiftId})).getResult()['name'];
+
            if( request.payload['values'].length > 0 ) {
 
             for ( let i = 0; i < request.payload['values'].length; i++ ) {
 
                 let keyName = husn + ":" + musn + ":"+request.payload['values'][i]['hexAdd'];
-           
-                for( let j = 0; j < companyMeterParameters.length; j++ ) {
 
+                for( let j = 0; j < companyMeterParameters.length; j++ ) {
             //        if( (companyMeterParameters[j]['hexAddress'] == request.payload['values'][i]['hexAdd']) && (request.payload['values'][i]['value'] < companyMeterParameters[j]['minThresholdValue']  )){
-                     
+
                             if('minThresholdValue' in companyMeterParameters[j] && 'maxThresholdValue' in companyMeterParameters[j]) {
 
                                 if( companyMeterParameters[j]['hexAddress'] == request.payload['values'][i]['hexAdd'] &&  request.payload['values'][i]['value'] < companyMeterParameters[j]['minThresholdValue']){
@@ -143,9 +145,21 @@ export default class MeterDataController {
                                         "emailData": {"msg":msg}
                                     }
 
+                                  let faultInfoObj = {};
+                                  faultInfoObj['companyId'] = companyId;
+                                  faultInfoObj['meterId'] = comapnyMeterData['companyMeterId'];
+                                  faultInfoObj['meterName'] = companyMetersData['name'];
+                                  faultInfoObj['parameterName'] = companyMeterParameters[j]['name'];
+                                  faultInfoObj['faultTime'] = new Date();
+                                  faultInfoObj['value'] = request.payload['values'][i]['value'];
+                                  faultInfoObj['minThreshold'] = companyMeterParameters[j]['minThresholdValue'];
+                                  faultInfoObj['maxThreshold'] = companyMeterParameters[j]['maxThresholdValue'];
+                                  faultInfoObj['shift'] = shiftName;
+                                  console.log("faultInfoObj", faultInfoObj);
+                                  let faultInfoResponse = await this.faultInformationServiceImpl.createEntry(faultInfoObj,[]);
+                                  console.log("faultInfoResponse",faultInfoResponse); 
                                   await DataPreparation.sendEmail(obj);
-                                  response = new Response(false, StatusCodes.OK, msg, false);
-                            
+                                //   response = new Response(false, StatusCodes.OK, msg, false);
                             
                                 }  if(companyMeterParameters[j]['hexAddress'] == request.payload['values'][i]['hexAdd'] && request.payload['values'][i]['value'] > companyMeterParameters[j]['maxThresholdValue']){
 
@@ -158,9 +172,23 @@ export default class MeterDataController {
                                         "templateType": 2,
                                         "emailData": {"msg":msg}
                                     }
+                                    let faultInfoObj = {};
+                                    faultInfoObj['companyId'] = companyId;
+                                    faultInfoObj['meterId'] = comapnyMeterData['companyMeterId'];
+                                    faultInfoObj['meterName'] = companyMetersData['name'];
+                                    faultInfoObj['parameterName'] = companyMeterParameters[j]['name'];
+                                    faultInfoObj['faultTime'] = new Date();
+                                    faultInfoObj['value'] = request.payload['values'][i]['value'];
+                                    faultInfoObj['minThreshold'] = companyMeterParameters[j]['minThresholdValue'];
+                                    faultInfoObj['maxThreshold'] = companyMeterParameters[j]['maxThresholdValue'];
+                                    faultInfoObj['shift'] = shiftName;
+
+                                    console.log("faultInfoObj", faultInfoObj);
+                                    let faultInfoResponse = await this.faultInformationServiceImpl.createEntry(faultInfoObj,[]) 
+                                    console.log("faultInfoResponse", faultInfoResponse);
 
                                     await DataPreparation.sendEmail(obj);
-                                    response = new Response(false, StatusCodes.OK, msg, false);
+                                    // response = new Response(false, StatusCodes.OK, msg, false);
                                 }
                             }
 

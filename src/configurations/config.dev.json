@@ -25,7 +25,9 @@
             "fixedReportPythonFilePath": "/home/ubuntu/irisbackend/fixed-report-creation.py",
             "customReportPath":"/home/ubuntu/irisbackend/excel-files/custom-report-",
             "excelUploadPath":"/home/ubuntu/uploads",
-            "fixedReportPath":"/home/ubuntu/irisbackend/excel-files/fixed-report-"
+            "fixedReportPath":"/home/ubuntu/irisbackend/excel-files/fixed-report-",
+            "msedclReportPath":"/home/ubuntu/irisbackend/excel-files/msedcl-fixed-report-"
+
 
         },
         "myHost": "13.127.215.76",

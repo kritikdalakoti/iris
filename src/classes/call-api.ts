@@ -66,7 +66,7 @@ export class CallApi {
                 options.json = data;
             }
 
-            console.log("options", options);
+            // console.log("options", options);
 
             request(options, function (err, response, body) {
 

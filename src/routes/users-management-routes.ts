@@ -1,7 +1,7 @@
 import * as Hapi from '@hapi/hapi';
 import { StatusCodes } from "../classes/status-codes";
 import { Response } from "../classes/response";
-import { getPassword,getEmail,getEmailAndPassword,createUserManagementModelValidationObj, updateUserManagementModelValidationObj ,companyIdAndUserIdInParams,companyIdInParams,getAllUserParams} from '../validations/users-management-validations';
+import { updatePwd,getPassword,getEmail,getEmailAndPassword,createUserManagementModelValidationObj, updateUserManagementModelValidationObj ,companyIdAndUserIdInParams,companyIdInParams,getAllUserParams} from '../validations/users-management-validations';
 import UsersManagementController from '../controllers/users-management-controller';
 import { headerValidationModel } from "../validations/common-validations";
 
@@ -257,17 +257,16 @@ export default function (server: Hapi.Server) {
             }
         },
           {
-            method: 'PUT',
-            path: '/' + version + "/"+resourceName+"/update-password"+"/email/{email}",
+            method: 'POST',
+            path: '/' + version + "/"+resourceName+"/update-password",
             options: {
-                handler: controller.handleUpdateEntry,
+                handler: controller.handleUpdatePassword,
                 description: 'update Single Entry of User',
                 tags: ['api'], // ADD THIS TAG
                 auth: isAuthRequired,
                 validate: {
                     headers: headerValidationModel,
-                    params: getEmail,
-                    payload: getPassword,
+                    payload: updatePwd,
                     failAction: async (request, h, err) => {
 
                         if (err) {

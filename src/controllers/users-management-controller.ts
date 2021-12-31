@@ -98,6 +98,39 @@ export default class UsersManagementController extends CommonController {
         return h.response(response).code(response.getStatusCode());
     }
 
+    public async handleUpdatePassword(request: Hapi.Request, h: Hapi.ResponseToolkit) {
+
+        let response: Response;
+
+        try {
+
+            let payload = await DataPreparation.convertObjectsToStringsInPayload(request.payload);
+
+
+            let condition = {};
+            condition['email'] = request.payload['email'];
+            condition['forgotPasswordToken'] = request.payload['forgotPasswordToken'];
+
+            response = await this.serviceImpl.getSingleEntry(condition);
+            if(response.getIsSuccess()) {
+
+                if( payload['password'] != undefined ) {
+                
+                    payload['password'] =  this.passwordEncryption.encrypt(request.payload['password'].trim());
+
+                } 
+                response = await this.serviceImpl.updateEntry(condition, payload);
+
+            }
+         
+
+        } catch (err) {
+
+            response = new Response(false, StatusCodes.INTERNAL_SERVER_ERROR, err.message, err);
+        }
+        return h.response(response).code(response.getStatusCode());
+    }
+
     // public async handleLogin(request: Hapi.Request, h: Hapi.ResponseToolkit) {
 
     //     let response: Response;
@@ -273,10 +306,12 @@ export default class UsersManagementController extends CommonController {
 
             let condition = {};
             condition['email'] = (request.payload['email'].trim()).toLowerCase();  
+            condition['isDeleted'] = 0;
+            condition['isActivated'] = 1;
             result = await this.serviceImpl.getSingleEntry(condition);
-
-            if (result.getIsSuccess) {
-                let tokenString =  Math.random().toString(36) + Math.random().toString(36)+Math.random().toString(36)+Math.random().toString(36)+Math.random().toString(36)+Math.random().toString(36);
+            console.log("result",result)
+            if (result.getIsSuccess()) {
+                let tokenString =  Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);
                 let userResponse = await this.serviceImpl.updateEntry(condition,{'forgotPasswordToken':tokenString});
 
                 let obj = {
@@ -297,7 +332,7 @@ export default class UsersManagementController extends CommonController {
 
             } else {
 
-                response = new Response(false, StatusCodes.INTERNAL_SERVER_ERROR, CustomMessages.EMAIL_NOT_PRESENT, {});
+                response = new Response(false, StatusCodes.BAD_REQUEST, CustomMessages.EMAIL_NOT_PRESENT, {});
 
             }
         } catch (err) {

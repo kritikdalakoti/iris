@@ -25,8 +25,8 @@
             "fixedReportPythonFilePath": "/home/pratik/Downloads/iris/fixed-report-creation.py",
             "customReportPath":"/home/pratik/Downloads/iris/excel-files/custom-report-",
             "excelUploadPath":"/home/pratik/uploads/",
-            "fixedReportPath":"/home/pratik/Downloads/iris/excel-files/fixed-report-"
-
+            "fixedReportPath":"/home/pratik/Downloads/iris/excel-files/fixed-report-",
+            "msedclReportPath":"/home/pratik/Downloads/iris/excel-files/msedcl-fixed-report-"
         },
         "myHost": "localhost",
         "awsS3": {
@@ -38,8 +38,8 @@
         }, 
         "mailConfig": {
             "host": "smtp.gmail.com",
-            "username": "reportiris23@gmail.com",
-            "password": "patil@1995"
+            "username": "msdian0718@gmail.com",
+            "password": "8975610019"
         },
         "extraData": {},
         "influxConfig": {
